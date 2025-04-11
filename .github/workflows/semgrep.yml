@@ -34,27 +34,21 @@ jobs:
           python -m ensurepip --upgrade
           python -m pip install --upgrade pip
 
-      - name: Install Semgrep and Prospector2HTML
+      - name: Install Semgrep
         run: |
           . venv/bin/activate
           pip install semgrep
-          pip install prospector2html
 
       - name: Run Semgrep scan
         run: |
           . venv/bin/activate
           semgrep scan --config="p/default" --json --output semgrep.json
 
-      - name: Generate HTML report with prospector2html
-        run: |
-          . venv/bin/activate
-          prospector-html --input semgrep.json --output semgrep-report.html --filter semgrep
-
-      - name: Upload the Semgrep HTML report to GitHub Pages
+      - name: Upload the Semgrep JSON report to GitHub Pages
         run: |
           mkdir -p docs
-          mv semgrep-report.html docs/
-        # Configura el despliegue a GitHub Pages
+          mv semgrep.json docs/
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
