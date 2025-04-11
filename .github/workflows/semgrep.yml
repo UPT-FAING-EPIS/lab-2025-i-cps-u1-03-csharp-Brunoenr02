@@ -27,22 +27,27 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Install Python and pip
+      - name: Install Python, create virtual environment, and install pip
         run: |
+          python3 -m venv venv
+          . venv/bin/activate
           python -m ensurepip --upgrade
           python -m pip install --upgrade pip
 
-      - name: Install Semgrep
+      - name: Install Semgrep and Prospector2HTML
         run: |
-          python -m pip install semgrep
-          python -m pip install prospector2html
+          . venv/bin/activate
+          pip install semgrep
+          pip install prospector2html
 
       - name: Run Semgrep scan
         run: |
+          . venv/bin/activate
           semgrep scan --config="p/default" --json --output semgrep.json
 
       - name: Generate HTML report with prospector2html
         run: |
+          . venv/bin/activate
           prospector-html --input semgrep.json --output semgrep-report.html --filter semgrep
 
       - name: Upload the Semgrep HTML report to GitHub Pages
