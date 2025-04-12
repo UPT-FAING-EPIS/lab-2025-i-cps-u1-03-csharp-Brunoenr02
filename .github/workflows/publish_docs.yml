@@ -1,4 +1,4 @@
-name: Actividad 03 - DocFX Documentation
+name: Actividad03 - DocFX Documentation
 
 on:
   push:
@@ -27,18 +27,21 @@ jobs:
         run: echo "${HOME}/.dotnet/tools" >> $GITHUB_PATH
 
       - name: Restore & Build Project
+        working-directory: ./Bank
         run: |
           dotnet restore
           dotnet build
 
       - name: Generate Metadata
+        working-directory: ./Bank
         run: docfx metadata docfx.json
 
       - name: Build Documentation Site
+        working-directory: ./Bank
         run: docfx build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_site
+          publish_dir: ./Bank/_site
