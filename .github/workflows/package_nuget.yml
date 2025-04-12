@@ -28,7 +28,7 @@ jobs:
         shell: bash
 
       - name: Restore dependencies
-        run: dotnet restore Bank.sln
+        run: dotnet restore ./Bank/Bank.sln
         working-directory: ./Bank
 
       - name: Run tests and generate code coverage
