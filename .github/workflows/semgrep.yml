@@ -45,6 +45,10 @@ jobs:
           semgrep scan --config="p/default" --json --output semgrep.json
           # Convertir el reporte JSON a HTML
           python3 -m json.tool semgrep.json > semgrep.html
+      
+      - name: (T2) Convert JSON to HTML using prospector-html
+        run: |
+          prospector-html semgrep.json > semgrep-prospector.html
 
       - name: Upload reports to GitHub Pages
         run: |
