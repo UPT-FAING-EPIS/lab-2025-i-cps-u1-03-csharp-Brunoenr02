@@ -28,6 +28,9 @@ jobs:
 
     - name: Build solution
       run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration Release
+    
+    - name: List files in ./TestResults
+      run: ls -R ./TestResults
 
     - name: Run tests with coverage
       run: dotnet test ${{ env.PROJECT_PATH }} --no-build --configuration Release --collect:"Code Coverage" --results-directory ./TestResults --logger "trx"
