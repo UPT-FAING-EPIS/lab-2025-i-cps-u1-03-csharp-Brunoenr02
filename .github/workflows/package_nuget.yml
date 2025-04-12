@@ -23,28 +23,34 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Navigate to solution folder
+        run: cd Bank
+        shell: bash
+
       - name: Restore dependencies
-        run: dotnet restore ./Bank.sln
+        run: dotnet restore Bank.sln
+        working-directory: ./Bank
 
       - name: Run tests and generate code coverage
         run: |
-          dotnet test ./Bank.sln --collect:"XPlat Code Coverage"
+          dotnet test Bank.sln --collect:"XPlat Code Coverage"
           dotnet tool install -g dotnet-reportgenerator-globaltool
           reportgenerator \
             -reports:**/coverage.cobertura.xml \
             -targetdir:coveragereport \
             -reporttypes:MarkdownSummaryGithub
+        working-directory: ./Bank
 
       - name: Upload test results as artifact
         uses: actions/upload-artifact@v4
         with:
           name: code-coverage-report
-          path: coveragereport
+          path: Bank/coveragereport
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         with:
-          projectBaseDir: .
+          projectBaseDir: ./Bank
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
@@ -52,14 +58,16 @@ jobs:
 
       - name: Build the NuGet package
         run: dotnet pack ${{ env.PROJECT_PATH }} -c Release -o ./nuget
+        working-directory: ./Bank
 
       - name: Publish package to GitHub Packages
         run: dotnet nuget push ./nuget/*.nupkg --source "github" --api-key ${{ secrets.GITHUB_TOKEN }}
         env:
           NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: ./Bank
 
       - name: Upload NuGet package
         uses: actions/upload-artifact@v4
         with:
           name: NuGet Package
-          path: ./nuget/*.nupkg
+          path: Bank/nuget/*.nupkg
