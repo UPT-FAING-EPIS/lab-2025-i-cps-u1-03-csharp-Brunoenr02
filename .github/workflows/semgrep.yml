@@ -34,16 +34,16 @@ jobs:
           python -m ensurepip --upgrade
           python -m pip install --upgrade pip
 
-      - name: Install Semgrep and prospector-html
+      - name: Install Semgrep
         run: |
           . venv/bin/activate
-          pip install semgrep prospector-html
+          pip install semgrep
 
       - name: Run Semgrep scan and generate HTML report
         run: |
           . venv/bin/activate
           semgrep scan --config="p/default" --json --output semgrep.json
-          prospector-html -i semgrep.json -o semgrep.html
+          semgrep --json-to-html semgrep.json > semgrep.html
 
       - name: Upload reports to GitHub Pages
         run: |
