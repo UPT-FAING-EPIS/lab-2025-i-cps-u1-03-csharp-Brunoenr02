@@ -51,11 +51,6 @@ jobs:
           # Convertir el reporte JSON a HTML
           python3 -m json.tool semgrep.json > semgrep.html
       
-      - name: Convert JSON to HTML using prospector2html
-        run: |
-          . venv/bin/activate
-          prospector-html --input semgrep.json --output semgrep-prospector.html
-
       - name: Upload reports to GitHub Pages
         run: |
           mkdir -p docs
