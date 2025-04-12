@@ -43,7 +43,8 @@ jobs:
         run: |
           . venv/bin/activate
           semgrep scan --config="p/default" --json --output semgrep.json
-          semgrep --json-to-html semgrep.json > semgrep.html
+          # Convertir el reporte JSON a HTML
+          python3 -m json.tool semgrep.json > semgrep.html
 
       - name: Upload reports to GitHub Pages
         run: |
