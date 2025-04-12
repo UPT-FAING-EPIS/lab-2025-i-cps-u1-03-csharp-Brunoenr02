@@ -39,6 +39,11 @@ jobs:
           . venv/bin/activate
           pip install semgrep
 
+      - name: Install prospector2html
+        run: |
+          . venv/bin/activate
+          pip install prospector2html
+
       - name: Install prospector-html
         run: |
           . venv/bin/activate
