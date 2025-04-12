@@ -49,13 +49,18 @@ jobs:
           . venv/bin/activate
           semgrep scan --config="p/default" --json --output semgrep.json
           # Convertir el reporte JSON a HTML
-          python3 -m json.tool semgrep.json > semgrep.html
+          python3 -m json.tool semgrep.json > semgrep-prospector.html
       
+      - name: Convert JSON to HTML using prospector2html
+        run: |
+          . venv/bin/activate
+          prospector-html --input semgrep.json --output semgrep-prospector.html
+
       - name: Upload reports to GitHub Pages
         run: |
           mkdir -p docs
           mv semgrep.json docs/
-          mv semgrep.html docs/
+          mv semgrep-prospector.html docs/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
