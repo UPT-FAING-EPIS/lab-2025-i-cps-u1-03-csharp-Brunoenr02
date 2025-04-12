@@ -1,6 +1,7 @@
 name: Actividad02 - Semgrep Analysis
 env:
   DOTNET_VERSION: '8.x'  # La versión de .NET
+
 on:
   push:
     branches:
@@ -15,8 +16,7 @@ jobs:
   security:
     runs-on: ubuntu-latest
     container:
-      # A Docker image with Semgrep installed. Do not change this.
-      image: semgrep/semgrep
+      image: semgrep/semgrep  # Docker con Semgrep instalado
 
     steps:
       - name: Check out the code
@@ -34,19 +34,24 @@ jobs:
           python -m ensurepip --upgrade
           python -m pip install --upgrade pip
 
-      - name: Install Semgrep
+      - name: Install Semgrep and prospector-html
         run: |
           . venv/bin/activate
-          pip install semgrep
+          pip install semgrep prospector-html
 
-      - name: Run Semgrep scan (JSON and HTML reports)
+      - name: Run Semgrep scan and generate HTML report
         run: |
           . venv/bin/activate
+          semgrep scan --config="p/default" --json --output semgrep.json
+          prospector-html -i semgrep.json -o semgrep.html
+
+      - name: Upload reports to GitHub Pages
+        run: |
           mkdir -p docs
-          semgrep scan --config="p/default" --json --output docs/semgrep.json
-          semgrep scan --config="p/default" --output-format html --output docs/semgrep.html
+          mv semgrep.json docs/
+          mv semgrep.html docs/
 
-      - name: Deploy reports to GitHub Pages
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
