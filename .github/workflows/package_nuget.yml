@@ -1,0 +1,70 @@
+name: Actividad04 - PackageNuGet
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-test-analyze-package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+
+      - name: Restore dependencies
+        working-directory: ./Bank
+        run: dotnet restore
+
+      - name: Run unit tests
+        working-directory: ./Bank
+        run: |
+          dotnet test --collect:"XPlat Code Coverage" --results-directory TestResults
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: Bank/TestResults
+
+      # SonarCloud Analysis
+      - name: Setup Java (for SonarScanner)
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install SonarScanner
+        uses: SonarSource/sonarcloud-github-action@master
+
+      - name: Run SonarCloud analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        working-directory: ./Bank
+        run: |
+          dotnet build
+          dotnet-sonarscanner begin \
+            /k:"${{ secrets.SONAR_PROJECT_KEY }}" \
+            /o:"${{ secrets.SONAR_ORGANIZATION }}" \
+            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.cobertura.xml"
+          dotnet build
+          dotnet test --no-build --collect:"XPlat Code Coverage"
+          dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+
+      - name: Pack NuGet package
+        working-directory: ./Bank
+        run: dotnet pack Bank.Domain/Bank.Domain.csproj --configuration Release --output ./nuget
+
+      - name: Publish to GitHub Packages
+        run: dotnet nuget push Bank/nuget/*.nupkg --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --api-key ${{ secrets.NUGET_API_KEY }}
