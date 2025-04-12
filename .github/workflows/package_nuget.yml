@@ -18,9 +18,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: List files in Bank directory (Debugging)
-        run: ls -la ./Bank
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -28,6 +25,12 @@ jobs:
 
       - name: Navigate to Bank folder
         run: cd ./Bank
+
+      - name: Verify current directory
+        run: pwd
+
+      - name: List files in Bank directory (Debugging)
+        run: ls -la
 
       - name: Restore dependencies
         run: dotnet restore Bank.sln
