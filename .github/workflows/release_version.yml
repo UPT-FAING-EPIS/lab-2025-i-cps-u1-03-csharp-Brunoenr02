@@ -1,4 +1,4 @@
-name: Release Version to GitHub
+name: Actividad05 - ReleaseVersion
 
 on:
   push:
