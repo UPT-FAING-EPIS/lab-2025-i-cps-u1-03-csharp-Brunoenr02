@@ -1,0 +1,48 @@
+name: Paso05 - ReleaseVersion
+
+# El flujo de trabajo se activa cuando se realiza un 'push' a la rama principal
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Paso 1: Checkout del código
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Paso 2: Configurar la versión de .NET
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0'
+
+    # Paso 3: Restaurar dependencias
+    - name: Restore dependencies
+      run: dotnet restore "Bank/Bank.sln"
+
+    # Paso 4: Ejecutar los tests unitarios
+    - name: Run unit tests
+      run: dotnet test "Bank/Bank.sln" --configuration Release
+
+    # Paso 5: Empaquetar el proyecto en un paquete NuGet
+    - name: Pack NuGet package
+      run: |
+        dotnet pack "Bank/Bank.WebApi/Bank.WebApi.csproj" --configuration Release --output ./nupkg
+
+    # Paso 6: Verificar que el paquete NuGet se haya generado
+    - name: List generated files
+      run: ls -la ./nupkg
+
+    # Paso 7: Crear un Release en GitHub
+    - name: Create GitHub Release
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ./nupkg/*.nupkg
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
