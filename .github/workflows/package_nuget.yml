@@ -9,6 +9,8 @@ on:
 env:
   DOTNET_VERSION: '8.x'
   PROJECT_PATH: './Bank.WebApi/Bank.WebApi.csproj'
+  SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+  SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
 
 jobs:
   build-test-analyze-package:
