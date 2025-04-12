@@ -39,17 +39,14 @@ jobs:
           . venv/bin/activate
           pip install semgrep
 
-      - name: Run Semgrep scan
+      - name: Run Semgrep scan (JSON and HTML reports)
         run: |
           . venv/bin/activate
-          semgrep scan --config="p/default" --json --output semgrep.json
-
-      - name: Upload the Semgrep JSON report to GitHub Pages
-        run: |
           mkdir -p docs
-          mv semgrep.json docs/
+          semgrep scan --config="p/default" --json --output docs/semgrep.json
+          semgrep scan --config="p/default" --output-format html --output docs/semgrep.html
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy reports to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
