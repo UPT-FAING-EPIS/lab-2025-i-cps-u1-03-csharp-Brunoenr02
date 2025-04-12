@@ -1,4 +1,4 @@
-name: Paso05 - ReleaseVersion
+name: Actividad05 - ReleaseVersion
 
 # El flujo de trabajo se activa cuando se realiza un 'push' a la rama principal
 on:
@@ -45,4 +45,4 @@ jobs:
       with:
         files: ./nupkg/*.nupkg
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GHTOKEN }}
