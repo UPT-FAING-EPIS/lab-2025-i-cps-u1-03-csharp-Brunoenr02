@@ -1,48 +1,47 @@
-name: Actividad05 - ReleaseVersion
+name: Release Version to GitHub
 
-# El flujo de trabajo se activa cuando se realiza un 'push' a la rama principal
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'  # Se ejecuta cuando haces push de un tag como v1.0.0, v1.2.3, etc.
+
+env:
+  DOTNET_VERSION: '8.0'
+  NUGET_PROJECT: 'Bank.WebApi'
+  NUGET_OUTPUT_DIR: './nupkg'
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # Paso 1: Checkout del código
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Paso 2: Configurar la versión de .NET
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0'
+        dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    # Paso 3: Restaurar dependencias
     - name: Restore dependencies
       run: dotnet restore "Bank/Bank.sln"
 
-    # Paso 4: Ejecutar los tests unitarios
     - name: Run unit tests
       run: dotnet test "Bank/Bank.sln" --configuration Release
 
-    # Paso 5: Empaquetar el proyecto en un paquete NuGet
     - name: Pack NuGet package
       run: |
-        dotnet pack "Bank/Bank.WebApi/Bank.WebApi.csproj" --configuration Release --output ./nupkg
+        mkdir -p ${{ env.NUGET_OUTPUT_DIR }}
+        dotnet pack "Bank/${{ env.NUGET_PROJECT }}/${{ env.NUGET_PROJECT }}.csproj" \
+          --configuration Release \
+          --output ${{ env.NUGET_OUTPUT_DIR }}
 
-    # Paso 6: Verificar que el paquete NuGet se haya generado
-    - name: List generated files
-      run: ls -la ./nupkg
+    - name: List generated .nupkg files
+      run: ls -la ${{ env.NUGET_OUTPUT_DIR }}
 
-    # Paso 7: Crear un Release en GitHub
     - name: Create GitHub Release
-      id: create_release
       uses: softprops/action-gh-release@v1
       with:
-        files: ./nupkg/*.nupkg
+        files: ${{ env.NUGET_OUTPUT_DIR }}/*.nupkg
       env:
         GITHUB_TOKEN: ${{ secrets.GHTOKEN }}
