@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOTNET_VERSION: '8.0.x'
-      PROJECT_PATH: './Bank.Domain/Bank.Domain.csproj'
+      PROJECT_PATH: './Bank.WebApi/Bank.WebApi.csproj'
       PACKAGE_OUTPUT_DIR: './output'
 
     steps:
@@ -30,7 +30,7 @@ jobs:
       run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration Release
 
     - name: Run tests with coverage
-      run: dotnet test --no-build --configuration Release --collect:"XPlat Code Coverage"
+      run: dotnet test ${{ env.PROJECT_PATH }} --no-build --configuration Release --collect:"XPlat Code Coverage"
 
     - name: Report coverage
       uses: danielpalme/ReportGenerator-GitHub-Action@5.2.4
