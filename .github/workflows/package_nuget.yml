@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOTNET_VERSION: '8.0.x'
-      PROJECT_PATH: './Bank.WebApi/Bank.WebApi.csproj'
+      PROJECT_PATH: '${{ github.workspace }}/Bank.WebApi/Bank.WebApi.csproj'
       PACKAGE_OUTPUT_DIR: './output'
 
     steps:
