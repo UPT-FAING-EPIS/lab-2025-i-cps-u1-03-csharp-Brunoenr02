@@ -1,4 +1,4 @@
-name: Build and Publish NuGet Package
+name: Actividad04 - NuGetPackage
 
 on:
   push:
@@ -23,12 +23,12 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Install dependencies
-        run: dotnet restore
+      - name: Restore dependencies
+        run: dotnet restore ./Bank.sln
 
       - name: Run tests and generate code coverage
         run: |
-          dotnet test --collect:"XPlat Code Coverage"
+          dotnet test ./Bank.sln --collect:"XPlat Code Coverage"
           dotnet tool install -g dotnet-reportgenerator-globaltool
           reportgenerator \
             -reports:**/coverage.cobertura.xml \
